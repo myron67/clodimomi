@@ -14,7 +14,7 @@
 html{font-size:16px}
 body{margin:0;background:#1d1216;color:var(--cream);font-family:var(--body);line-height:1.4;min-height:100%;overflow-x:hidden;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
 /* Фоновая иллюстрация лежит рядом с index.html */
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(43deg,rgba(30,13,17,.62),rgba(69,35,19,.48)),url('if8dG-bxiywyfP570tbrfbs58YXaGPfvAUJfxDlxbuY.jpg');background-size:cover;background-position:center;background-repeat:no-repeat}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(43deg,rgba(30,13,17,.62),rgba(69,35,19,.48)),url('monet-garden-bg.jpg');background-size:cover;background-position:center;background-repeat:no-repeat}
 .wrap{position:relative;z-index:1;display:flex;justify-content:center;padding:1.6rem 1rem}
 main{width:44rem;max-width:100%;border-radius:1.5rem;overflow:visible}
 /* Тень на каждой стороне отдельно: она вращается вместе с самой стороной карточки */
@@ -36,7 +36,8 @@ p{margin:.5rem 0}
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;align-items:start}
 .center{text-align:center}
 .ph{background:repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 10px,rgba(255,255,255,.12) 10px 20px);border:2px dashed rgba(247,234,188,.5);border-radius:.6rem;display:flex;align-items:center;justify-content:center;color:rgba(255,247,219,.75);font-size:.8rem;text-align:center;padding:.5rem}
-.avatar{width:12rem;max-width:100%;aspect-ratio:1;margin:0 auto .8rem}
+.avatar{position:relative;width:12rem;max-width:100%;aspect-ratio:1;margin:0 auto .8rem;overflow:hidden}
+.portrait-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:.5rem}
 .name{font-weight:700;font-size:1.15rem;color:#FFEDAB;text-align:center}
 .small{font-size:.8rem}
 ul.tl{list-style:none;padding:0;margin:0}
@@ -70,7 +71,7 @@ th{color:#fff}
   <div class="panel tone">
    <div class="cols">
     <div>
-     <div class="ph avatar">[ портрет Моне ]</div>
+     <div class="ph avatar"><img class="portrait-photo" src="Autoportret_Claude_Monet.jpg" alt="Автопортрет Клода Моне, 1917" loading="lazy"></div>
      <p class="name">Клод Моне ✦ 1840–1926 ✿ fr</p>
      <p class="center small">Оскар-Клод Моне, французский художник, основатель импрессионизма. Любил писать свет, воду и погоду прямо на улице, а не в мастерской.</p>
     </div>
