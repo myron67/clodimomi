@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Клод Моне</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Fuzzy+Bubbles:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF7DB;--gold:#FFE894;--white:#fff;--head:#4D281D;--dark:#2B2223;--brown:rgba(156,103,73,.8);--green:#B7FFA5;
+--body:'Fuzzy Bubbles','Comic Sans MS',cursive;--display:'Amatic SC','Impact',sans-serif;
+--tone:linear-gradient(rgba(156,103,73,.8),rgba(156,103,73,.8)),#5a3826}
+*,*::before,*::after{box-sizing:border-box}
+html{font-size:16px}
+body{margin:0;background:#1d1216;color:var(--cream);font-family:var(--body);line-height:1.4;min-height:100%;overflow-x:hidden;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+/* Фоновая иллюстрация лежит рядом с index.html */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(43deg,rgba(30,13,17,.62),rgba(69,35,19,.48)),url('monet-garden-bg.jpg');background-size:cover;background-position:center;background-repeat:no-repeat}
+.wrap{position:relative;z-index:1;display:flex;justify-content:center;padding:1.6rem 1rem}
+main{width:44rem;max-width:100%;border-radius:1.5rem;overflow:visible}
+/* Тень на каждой стороне отдельно: она вращается вместе с самой стороной карточки */
+.page-turner{position:relative;border-radius:1.5rem;perspective:1400px;-webkit-perspective:1400px;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .9s cubic-bezier(.4,.2,.2,1),height .9s cubic-bezier(.4,.2,.2,1);will-change:transform,height}
+.page-turner.flipped{transform:rotateY(180deg)}
+/* При изменении ширины мгновенно пересчитываем высоту, чтобы старый край не торчал снизу */
+.page-turner.resizing{transition:transform .9s cubic-bezier(.4,.2,.2,1)}
+.page-face{position:absolute;top:0;left:0;right:0;min-width:0;border-radius:1.5rem;box-shadow:0 1rem 3rem rgba(0,0,0,.4);backface-visibility:hidden;-webkit-backface-visibility:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.page-face:focus-visible{outline:3px solid var(--gold);outline-offset:-5px}
+.page-works{transform:rotateY(180deg)}
+.panel{padding:2rem 3rem;background:var(--dark)}
+.panel.tone{background:var(--tone)}
+.page-face>.panel:first-child{border-radius:1.5rem 1.5rem 0 0}
+.page-face>.panel:last-child{border-radius:0 0 1.5rem 1.5rem}
+h1,h2{font-family:var(--display);line-height:1;margin:0 0 .6rem;text-align:center;color:#fff;letter-spacing:.025rem}
+h1{font-size:3rem;margin-bottom:.4rem}h2{font-size:2.2rem}
+hr{border:0;height:2px;background:#fff;width:70%;margin:.8rem auto}
+p{margin:.5rem 0}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;align-items:start}
+.center{text-align:center}
+.ph{background:repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 10px,rgba(255,255,255,.12) 10px 20px);border:2px dashed rgba(247,234,188,.5);border-radius:.6rem;display:flex;align-items:center;justify-content:center;color:rgba(255,247,219,.75);font-size:.8rem;text-align:center;padding:.5rem}
+.avatar{width:12rem;max-width:100%;aspect-ratio:1;margin:0 auto .8rem}
+.name{font-weight:700;font-size:1.15rem;color:#FFEDAB;text-align:center}
+.small{font-size:.8rem}
+ul.tl{list-style:none;padding:0;margin:0}
+ul.tl li{display:flex;gap:.6rem;margin:.55rem 0;font-size:.85rem}
+ul.tl li::before{content:"";flex:0 0 .55rem;height:.55rem;margin-top:.4rem;background:#fff;border-radius:50%}
+ul.tl b{color:#fff}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+td,th{padding:.4rem .3rem;border-top:1px solid rgba(255,245,209,.25);text-align:left}
+th{color:#fff}
+.grid{columns:13rem;column-gap:1rem}
+.card{box-sizing:border-box;display:inline-block;vertical-align:top;width:100%;height:13rem;margin:0 0 1rem;break-inside:avoid;-webkit-column-break-inside:avoid;cursor:pointer;perspective:900px;-webkit-perspective:900px;font-family:var(--body);user-select:none;-webkit-tap-highlight-color:transparent}
+.card:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:.8rem}
+.in{position:relative;width:100%;height:100%;transition:transform .8s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d;-webkit-transform-style:preserve-3d;will-change:transform}
+.card.flip .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:.8rem;overflow:hidden}
+.front{position:absolute}
+.front.has-image{background:#1d1216;border:1px solid rgba(247,234,188,.35)}
+.artwork-photo{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:contain}
+.back{transform:rotateY(180deg);background:var(--tone);border:2px solid rgba(247,234,188,.5);padding:.8rem;display:flex;flex-direction:column;justify-content:center;text-align:center;gap:.35rem;overflow:auto}
+.back b{color:#fff;font-size:.9rem;line-height:1.25}
+.back p{font-size:.75rem;margin:0}
+.year{color:var(--gold);font-weight:700;font-size:.85rem}
+@media (max-width:736px){html{font-size:15px}.wrap{padding:1rem .75rem}main,.page-turner,.page-face{border-radius:1.2rem}.page-face>.panel:first-child{border-radius:1.2rem 1.2rem 0 0}.page-face>.panel:last-child{border-radius:0 0 1.2rem 1.2rem}.panel{padding:1.6rem 1.3rem}.cols{grid-template-columns:1fr}h1{font-size:2.6rem}}
+@media (prefers-reduced-motion:reduce){.page-turner,.in{transition-duration:.01ms}}
+</style>
+</head>
+<body>
+<div class="wrap"><main>
+<div class="page-turner" id="pageTurner">
+ <section id="home" class="page-face page-home" tabindex="0" aria-label="Главная: биография Клода Моне. Нажмите, чтобы открыть работы">
+  <div class="panel tone">
+   <div class="cols">
+    <div>
+     <div class="ph avatar">[ портрет Моне ]</div>
+     <p class="name">Клод Моне ✦ 1840–1926 ✿ fr</p>
+     <p class="center small">Оскар-Клод Моне, французский художник, основатель импрессионизма. Любил писать свет, воду и погоду прямо на улице, а не в мастерской.</p>
+    </div>
+    <div>
+     <h2>Кратко</h2>
+     <table>
+      <tr><th>Полное имя</th><td>Оскар-Клод Моне</td></tr>
+      <tr><th>Родился</th><td>14 ноября 1840, Париж</td></tr>
+      <tr><th>Умер</th><td>5 декабря 1926, Живерни</td></tr>
+      <tr><th>Направление</th><td>Импрессионизм</td></tr>
+      <tr><th>Известен</th><td>«Впечатление. Восходящее солнце», «Кувшинки»</td></tr>
+     </table>
+    </div>
+   </div>
+  </div>
+  <div class="panel">
+   <h1>Биография</h1><hr>
+   <p>Моне родился в Париже, но в пять лет семья переехала в Гавр на побережье Нормандии. Там он рисовал карикатуры на знакомых, а художник Эжен Буден научил его писать на открытом воздухе. Этот подход стал основой всего его творчества.</p>
+   <p>В 1859 году он уехал в Париж учиться, потом служил в армии в Алжире и вернулся из-за болезни. В студии Глейра он подружился с Ренуаром, Сислеем и Базилем. Вместе они позже создали новое направление.</p>
+   <p>В 1874 году на выставке независимых художников показали его картину «Впечатление. Восходящее солнце». Критик насмешливо назвал участников «импрессионистами», а название закрепилось. В последние десятилетия Моне жил в Живерни и писал свой сад с прудом. Ближе к концу жизни у него развилась катаракта, в 1923 году ему сделали операцию.</p>
+  </div>
+ </section>
+
+ <section id="works" class="page-face page-works" tabindex="0" aria-label="Работы Клода Моне. Нажмите вне карточки картины, чтобы вернуться к биографии">
+  <div class="panel tone">
+   <h1>Работы</h1><hr>
+   <p class="center small">Нажми на любую работу, чтобы перевернуть карточку</p>
+  </div>
+  <div class="panel"><p class="center small" id="gridStatus">Загружаем картины из каталога…</p><div class="grid" id="grid"></div></div>
+ </section>
+</div>
+</main></div>
+
+<script>
+const query=`
+SELECT ?item ?itemLabel (SAMPLE(?img) AS ?image)
+       (MIN(YEAR(?d)) AS ?from) (MAX(YEAR(?d)) AS ?to)
+WHERE {
+  ?item wdt:P170 wd:Q296;
+        wdt:P31 wd:Q3305213;
+        wdt:P18 ?img.
+  OPTIONAL { ?item wdt:P571 ?d. }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "ru,en". }
+}
+GROUP BY ?item ?itemLabel
+ORDER BY ?from
+LIMIT 48
+`;
+const grid=document.getElementById('grid');
+const gridStatus=document.getElementById('gridStatus');
+async function getWorks(width=800){
+ const url=new URL('https://query.wikidata.org/sparql');
+ url.searchParams.set('format','json');url.searchParams.set('query',query);
+ const response=await fetch(url,{headers:{Accept:'application/sparql-results+json'}});
+ if(!response.ok)throw new Error(`Wikidata: HTTP ${response.status}`);
+ const data=await response.json();
+ return data.results.bindings.map(b=>{
+  const from=b.from?Number(b.from.value):null;
+  const to=b.to?Number(b.to.value):null;
+  const image=new URL(b.image.value.replace(/^http:/,'https:'));
+  image.searchParams.set('width',String(width));
+  return {name:b.itemLabel.value,image:image.href,years:from===null?null:from===to?String(from):`${from}–${to}`};
+ });
+}
+function addWorkCard(w){
+ const card=document.createElement('div');
+ card.className='card';card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-pressed','false');
+ const inner=document.createElement('div');inner.className='in';
+ const front=document.createElement('div');front.className='face front ph';
+ if(w.image){
+  front.classList.add('has-image');
+  const img=document.createElement('img');img.className='artwork-photo';img.alt=`Картина: ${w.s}`;img.loading='lazy';
+  img.addEventListener('load',()=>{
+   if(img.naturalWidth&&img.naturalHeight){card.dataset.artRatio=String(img.naturalHeight/img.naturalWidth);resizeArtworkCards()}
+   updatePageHeight();
+  });
+  img.onerror=()=>{img.remove();front.classList.remove('has-image');delete card.dataset.artRatio;card.style.height='13rem';updatePageHeight()};
+  img.src=w.image;front.appendChild(img);
+ }
+ card.setAttribute('aria-label',`Перевернуть карточку: ${w.s}`);
+ const back=document.createElement('div');back.className='face back';
+ const backTitle=document.createElement('b');backTitle.textContent=w.t||w.s;
+ const backYear=document.createElement('span');backYear.className='year';backYear.textContent=w.y||'дата неизвестна';
+ const description=document.createElement('p');description.textContent=w.d||'Картина Клода Моне. Изображение и сведения о дате из Wikidata / Wikimedia Commons.';
+ back.append(backTitle,backYear,description);inner.append(front,back);card.appendChild(inner);
+ card.addEventListener('click',event=>{event.stopPropagation();card.setAttribute('aria-pressed',card.classList.toggle('flip'))});
+ card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();card.click()}});
+ grid.appendChild(card);
+}
+async function populateWorks(){
+ try{
+  const onlineWorks=await getWorks();
+  if(!onlineWorks.length)throw new Error('Wikidata вернула пустой список');
+  onlineWorks.forEach(item=>addWorkCard({
+   s:item.name,t:item.name,y:item.years,
+   d:'Картина Клода Моне из каталога Wikidata и Wikimedia Commons.',
+   image:item.image
+  }));
+  gridStatus.textContent=`Загружено картин из Wikidata: ${onlineWorks.length}.`;
+  updatePageHeight();
+ }catch(error){
+  console.warn('Не удалось загрузить каталог картин:',error);
+  gridStatus.textContent='Не удалось загрузить работы. Проверьте подключение к интернету и обновите страницу.';
+  updatePageHeight();
+ }
+}
+populateWorks();
+
+const turner=document.getElementById('pageTurner');
+function resizeArtworkCards(){
+ document.querySelectorAll('.card[data-art-ratio]').forEach(card=>{
+  card.style.height=(card.clientWidth*Number(card.dataset.artRatio))+'px';
+ });
+}
+function updatePageHeight(){
+ const activePage=turner.classList.contains('flipped')?document.getElementById('works'):document.getElementById('home');
+ turner.style.height=activePage.offsetHeight+'px';
+}
+function flipPage(){
+ turner.classList.toggle('flipped');
+ updatePageHeight();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+updatePageHeight();
+let resizeTimer;
+window.addEventListener('resize',()=>{
+ turner.classList.add('resizing');
+ resizeArtworkCards();
+ updatePageHeight();
+ clearTimeout(resizeTimer);
+ resizeTimer=setTimeout(()=>turner.classList.remove('resizing'),150);
+});
+if(document.fonts?.ready)document.fonts.ready.then(updatePageHeight);
+turner.addEventListener('click',event=>{if(!event.target.closest('.card'))flipPage()});
+turner.addEventListener('keydown',event=>{
+ if((event.key==='Enter'||event.key===' ')&&event.target.classList.contains('page-face')){event.preventDefault();flipPage()}
+});
+</script>
+</body>
+</html>
