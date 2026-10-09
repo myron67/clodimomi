@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Клод Моне</title>
+<link rel="preconnect" href="https://query.wikidata.org">
+<link rel="preconnect" href="https://commons.wikimedia.org">
+<link rel="preconnect" href="https://upload.wikimedia.org" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Fuzzy+Bubbles:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -13,18 +16,19 @@
 *,*::before,*::after{box-sizing:border-box}
 html{font-size:16px}
 body{margin:0;background:#1d1216;color:var(--cream);font-family:var(--body);line-height:1.4;min-height:100%;overflow-x:hidden;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
-/* Фоновая иллюстрация лежит рядом с index.html */
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(43deg,rgba(30,13,17,.62),rgba(69,35,19,.48)),url('if8dG-bxiywyfP570tbrfbs58YXaGPfvAUJfxDlxbuY.jpg');background-size:cover;background-position:center;background-repeat:no-repeat}
 .wrap{position:relative;z-index:1;display:flex;justify-content:center;padding:1.6rem 1rem}
 main{width:44rem;max-width:100%;border-radius:1.5rem;overflow:visible}
-/* Тень на каждой стороне отдельно: она вращается вместе с самой стороной карточки */
-.page-turner{position:relative;border-radius:1.5rem;perspective:1400px;-webkit-perspective:1400px;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .9s cubic-bezier(.4,.2,.2,1),height .9s cubic-bezier(.4,.2,.2,1);will-change:transform,height}
+.page-turner{position:relative;border-radius:1.5rem;perspective:1400px;-webkit-perspective:1400px;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,.2,.2,1),height .6s cubic-bezier(.4,.2,.2,1);will-change:transform,height}
 .page-turner.flipped{transform:rotateY(180deg)}
-/* При изменении ширины мгновенно пересчитываем высоту, чтобы старый край не торчал снизу */
-.page-turner.resizing{transition:transform .9s cubic-bezier(.4,.2,.2,1)}
+.page-turner.resizing{transition:transform .6s cubic-bezier(.4,.2,.2,1)}
 .page-face{position:absolute;top:0;left:0;right:0;min-width:0;border-radius:1.5rem;box-shadow:0 1rem 3rem rgba(0,0,0,.4);backface-visibility:hidden;-webkit-backface-visibility:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .page-face:focus-visible{outline:3px solid var(--gold);outline-offset:-5px}
 .page-works{transform:rotateY(180deg)}
+.page-face{overflow:hidden}
+.page-turner.turning .page-face{transition:max-height .6s cubic-bezier(.4,.2,.2,1)}
+.page-face.off{visibility:hidden}
+.page-turner.turning .page-face.off{transition:max-height .6s cubic-bezier(.4,.2,.2,1),visibility 0s linear .6s}
 .panel{padding:2rem 3rem;background:var(--dark)}
 .panel.tone{background:var(--tone)}
 .page-face>.panel:first-child{border-radius:1.5rem 1.5rem 0 0}
@@ -48,7 +52,7 @@ table{width:100%;border-collapse:collapse;font-size:.8rem}
 td,th{padding:.4rem .3rem;border-top:1px solid rgba(255,245,209,.25);text-align:left}
 th{color:#fff}
 .grid{columns:13rem;column-gap:1rem}
-.card{box-sizing:border-box;display:inline-block;vertical-align:top;width:100%;height:13rem;margin:0 0 1rem;break-inside:avoid;-webkit-column-break-inside:avoid;cursor:pointer;perspective:900px;-webkit-perspective:900px;font-family:var(--body);user-select:none;-webkit-tap-highlight-color:transparent}
+.card{box-sizing:border-box;display:block;width:100%;height:13rem;margin:0 0 1rem;break-inside:avoid;-webkit-column-break-inside:avoid;cursor:pointer;perspective:900px;-webkit-perspective:900px;font-family:var(--body);user-select:none;-webkit-tap-highlight-color:transparent}
 .card:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:.8rem}
 .in{position:relative;width:100%;height:100%;transition:transform .8s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d;-webkit-transform-style:preserve-3d;will-change:transform}
 .card.flip .in{transform:rotateY(180deg)}
@@ -117,11 +121,11 @@ WHERE {
 }
 GROUP BY ?item ?itemLabel
 ORDER BY ?from
-LIMIT 48
+LIMIT 98
 `;
 const grid=document.getElementById('grid');
 const gridStatus=document.getElementById('gridStatus');
-async function getWorks(width=800){
+async function getWorks(width=480){
  const url=new URL('https://query.wikidata.org/sparql');
  url.searchParams.set('format','json');url.searchParams.set('query',query);
  const response=await fetch(url,{headers:{Accept:'application/sparql-results+json'}});
@@ -142,7 +146,7 @@ function addWorkCard(w){
  const front=document.createElement('div');front.className='face front ph';
  if(w.image){
   front.classList.add('has-image');
-  const img=document.createElement('img');img.className='artwork-photo';img.alt=`Картина: ${w.s}`;img.loading='lazy';
+  const img=document.createElement('img');img.className='artwork-photo';img.alt=`Картина: ${w.s}`;img.decoding='async';
   img.addEventListener('load',()=>{
    if(img.naturalWidth&&img.naturalHeight){card.dataset.artRatio=String(img.naturalHeight/img.naturalWidth);resizeArtworkCards()}
    updatePageHeight();
@@ -185,14 +189,34 @@ function resizeArtworkCards(){
   card.style.height=(card.clientWidth*Number(card.dataset.artRatio))+'px';
  });
 }
+const homeFace=document.getElementById('home');
+const worksFace=document.getElementById('works');
+let settleTimer;
+function contentHeight(face){
+ return Array.from(face.children).reduce((sum,el)=>sum+el.offsetHeight,0);
+}
 function updatePageHeight(){
- const activePage=turner.classList.contains('flipped')?document.getElementById('works'):document.getElementById('home');
- turner.style.height=activePage.offsetHeight+'px';
+ const flipped=turner.classList.contains('flipped');
+ const active=flipped?worksFace:homeFace;
+ const inactive=flipped?homeFace:worksFace;
+ const h=contentHeight(active);
+ turner.style.height=h+'px';
+ active.classList.remove('off');
+ active.style.maxHeight=h+'px';
+ inactive.style.maxHeight='0px';
+ inactive.classList.add('off');
 }
 function flipPage(){
+ turner.classList.add('turning');
  turner.classList.toggle('flipped');
  updatePageHeight();
+ clearTimeout(settleTimer);
+ settleTimer=setTimeout(()=>turner.classList.remove('turning'),700);
  window.scrollTo({top:0,behavior:'smooth'});
+}
+if('ResizeObserver' in window){
+ const ro=new ResizeObserver(()=>updatePageHeight());
+ Array.from(homeFace.children).concat(Array.from(worksFace.children)).forEach(el=>ro.observe(el));
 }
 updatePageHeight();
 let resizeTimer;
